@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sorry</title>
+
+<style>
+  :root{
+    --bg1:#fff1f2;
+    --bg2:#eef2ff;
+    --card:#ffffffcc;
+    --text:#0f172a;
+    --muted:#64748b;
+    --shadow: 0 18px 45px rgba(2, 6, 23, .14);
+    --radius: 22px;
+  }
+
+  *{ box-sizing:border-box; }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    display:grid;
+    place-items:center;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color:var(--text);
+    background:
+      radial-gradient(1000px 500px at 10% 10%, var(--bg2) 0%, transparent 60%),
+      radial-gradient(900px 500px at 90% 20%, var(--bg1) 0%, transparent 60%),
+      linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    overflow:hidden;
+  }
+
+  /* subtle floating hearts */
+  .hearts{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    opacity:.45;
+    filter: blur(.2px);
+  }
+  .heart{
+    position:absolute;
+    font-size:18px;
+    animation: floatUp linear infinite;
+    user-select:none;
+  }
+  @keyframes floatUp{
+    from{ transform: translateY(110vh) translateX(0) rotate(0deg); }
+    to{ transform: translateY(-20vh) translateX(60px) rotate(20deg); }
+  }
+
+  .card{
+    width:min(520px, 92vw);
+    background: var(--card);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(15, 23, 42, .08);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 22px 18px 20px;
+    text-align:center;
+    position:relative;
+  }
+
+  .top{
+    display:flex;
+    justify-content:center;
+    margin-top:4px;
+  }
+
+  .picWrap{
+    width: 250px;
+    height: 250px;
+    border-radius: 20px;
+    overflow:hidden;
+    box-shadow: 0 16px 30px rgba(2,6,23,.18);
+    border: 3px solid rgba(255,255,255,.75);
+  }
+
+  img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
+  .sorry{
+    margin:16px 0 6px;
+    font-size: clamp(44px, 7vw, 62px);
+    font-weight: 900;
+    letter-spacing: .22em;
+    padding-left: .22em; /* to visually center letter spacing */
+    background: linear-gradient(90deg, #111827, #ef4444, #111827);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    transform: translateY(6px) scale(.92);
+    opacity:0;
+    animation: pop 900ms cubic-bezier(.2,.9,.2,1) forwards;
+  }
+
+  @keyframes pop{
+    to{ opacity:1; transform: translateY(0) scale(1); }
+  }
+
+  .question{
+    margin: 4px 0 0;
+    font-size: 18px;
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  .sub{
+    margin: 6px 0 0;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .arena{
+    margin-top: 18px;
+    height: 120px;
+    position: relative;
+  }
+
+  .btn{
+    border:0;
+    padding: 12px 18px;
+    border-radius: 16px;
+    font-weight: 800;
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform .08s ease, filter .2s ease;
+    user-select:none;
+  }
+  .btn:active{ transform: scale(.98); }
+
+  #yesBtn{
+    background: linear-gradient(180deg, #111827 0%, #0b1220 100%);
+    color: white;
+    box-shadow: 0 14px 22px rgba(15,23,42,.25);
+  }
+  #yesBtn:hover{ filter: brightness(1.05); }
+
+  #noBtn{
+    position:absolute;
+    background: #ffffff;
+    color: #0f172a;
+    border: 1px solid rgba(15, 23, 42, .14);
+    box-shadow: 0 14px 22px rgba(2,6,23,.10);
+    left: 62%;
+    top: 22px;
+  }
+
+  .toast{
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--muted);
+    min-height: 18px;
+  }
+
+  .success{
+    display:none;
+    margin-top: 14px;
+    background: rgba(15, 23, 42, .04);
+    border: 1px solid rgba(15, 23, 42, .08);
+    padding: 14px;
+    border-radius: 16px;
+    line-height: 1.55;
+  }
+
+  .bigYes{
+    display:none;
+    margin-top: 12px;
+    font-size: 56px;
+    font-weight: 950;
+    letter-spacing: .02em;
+  }
+</style>
+</head>
+
+<body>
+
+<!-- floating hearts -->
+<div class="hearts" id="hearts"></div>
+
+<div class="card" id="card">
+  <div class="top">
+    <div class="picWrap">
+      <!-- CHANGE IMAGE HERE -->
+      <img src="https://i.imgur.com/4AiXzf8.jpeg" alt="pic">
+    </div>
+  </div>
+
+  <div class="sorry">SORRY MO</div>
+
+  <div class="question">Accept apology?</div>
+  <div class="sub" id="sub">sorry mo...please 😭</div>
+
+  <div class="arena" id="arena">
+    <button class="btn" id="yesBtn">Yes</button>
+    <button class="btn" id="noBtn">No</button>
+  </div>
+
+  <div class="bigYes" id="bigYes">Yes</div>
+  <div class="toast" id="toast"></div>
+
+  <div class="success" id="success">
+    Thank you… mwaa mwaa🥺❤️<br>
+  </div>
+</div>
+
+<script>
+  const noBtn = document.getElementById("noBtn");
+  const yesBtn = document.getElementById("yesBtn");
+  const arena = document.getElementById("arena");
+  const toast = document.getElementById("toast");
+  const success = document.getElementById("success");
+  const bigYes = document.getElementById("bigYes");
+  const sub = document.getElementById("sub");
+
+  // --- make floating hearts ---
+  const hearts = document.getElementById("hearts");
+  const heartChars = ["❤","💗","💘","💖","💕"];
+  for(let i=0;i<18;i++){
+    const h = document.createElement("div");
+    h.className = "heart";
+    h.textContent = heartChars[Math.floor(Math.random()*heartChars.length)];
+    h.style.left = Math.random()*100 + "vw";
+    h.style.animationDuration = (10 + Math.random()*10) + "s";
+    h.style.animationDelay = (-Math.random()*12) + "s";
+    h.style.opacity = (0.25 + Math.random()*0.55).toFixed(2);
+    h.style.fontSize = (14 + Math.random()*18) + "px";
+    hearts.appendChild(h);
+  }
+
+  // --- helpers ---
+  function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+
+  function placeNoRandom(){
+    const pad = 8;
+    const a = arena.getBoundingClientRect();
+    const b = noBtn.getBoundingClientRect();
+
+    const maxX = (a.width - b.width) - pad;
+    const maxY = (a.height - b.height) - pad;
+
+    const x = clamp(Math.random()*maxX, pad, maxX);
+    const y = clamp(Math.random()*maxY, pad, maxY);
+
+    noBtn.style.left = x + "px";
+    noBtn.style.top  = y + "px";
+  }
+
+  // Hard dodge: if cursor/finger gets within this distance, RUN.
+  const PANIC_DISTANCE = 90;
+
+  function maybeDodge(clientX, clientY){
+    const a = arena.getBoundingClientRect();
+    const b = noBtn.getBoundingClientRect();
+
+    // If pointer is not inside arena, ignore
+    if(clientX < a.left || clientX > a.right || clientY < a.top || clientY > a.bottom) return;
+
+    const cx = b.left + b.width/2;
+    const cy = b.top  + b.height/2;
+    const dx = clientX - cx;
+    const dy = clientY - cy;
+    const dist = Math.hypot(dx, dy);
+
+    if(dist < PANIC_DISTANCE){
+      toast.textContent = "eheyyy";
+      placeNoRandom();
+    }
+  }
+
+  // Desktop: move away when you get close anywhere in the arena
+  arena.addEventListener("mousemove", (e) => {
+    maybeDodge(e.clientX, e.clientY);
+  });
+
+  // Mobile: move away when finger approaches / touches arena
+  arena.addEventListener("touchmove", (e) => {
+    const t = e.touches[0];
+    if(!t) return;
+    maybeDodge(t.clientX, t.clientY);
+  }, {passive:true});
+
+  // Also dodge on hover/touchstart directly on button
+  noBtn.addEventListener("mouseenter", () => { toast.textContent="huhu😭"; placeNoRandom(); });
+  noBtn.addEventListener("touchstart", (e) => { e.preventDefault(); toast.textContent="huhu😭"; placeNoRandom(); }, {passive:false});
+
+  // If they somehow click No
+  noBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    toast.textContent = "huhu";
+    placeNoRandom();
+  });
+
+  // Yes action
+  yesBtn.addEventListener("click", () => {
+    toast.textContent = "";
+    bigYes.style.display = "block";
+    success.style.display = "block";
+    sub.textContent = "Iloveyouuu mwamwaaa 😭💘";
+    noBtn.style.display = "none";
+    yesBtn.textContent = "Accepted ❤️";
+    yesBtn.disabled = true;
+    yesBtn.style.opacity = "0.92";
+  });
+
+  // initial placement
+  setTimeout(placeNoRandom, 120);
+  window.addEventListener("resize", () => setTimeout(placeNoRandom, 80));
+</script>
+
+</body>
+</html>
